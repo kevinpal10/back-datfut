@@ -6,7 +6,9 @@
 #
 # Después de desplegar hay que hacer dos cosas:
 #   1. Poner la URL pública que dé Render en `datfut/src/app/environments/environment.prod.ts`.
-#   2. Poner esa misma URL del frontend (la de Vercel) en CORS_ORIGINS, aquí abajo.
+#   2. Poner esa misma URL del frontend en CORS_ORIGINS, aquí abajo. Tiene que ser
+#      el dominio ESTABLE de Vercel (datfut.vercel.app), no la URL con hash de un
+#      despliegue concreto: esa cambia en cada push y CORS vuelve a bloquear.
 
 services:
   - type: web
@@ -34,7 +36,7 @@ services:
       # ── CORS: SPEC §6 exige restringirlo al dominio del frontend ─────────
       # Sustituir por la URL real de Vercel antes de dar el servicio por bueno.
       - key: CORS_ORIGINS
-        value: https://futanalytica.vercel.app
+        value: https://datfut.vercel.app
 
       # ── Agente (opcional) ────────────────────────────────────────────────
       # Sin estas, /agent/chat sigue respondiendo en modo degradado.
@@ -47,4 +49,4 @@ services:
       - key: BEDROCK_CLIENT
         value: invoke
       - key: BEDROCK_MODEL_ID
-        value: us.anthropic.claude-opus-5
+        value: us.anthropic.claude-sonnet-4-6
