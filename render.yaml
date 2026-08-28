@@ -1,0 +1,50 @@
+# Despliegue del backend en Render.
+#
+# Render lee este archivo al conectar el repositorio (Blueprint). Las variables
+# marcadas con `sync: false` NO se guardan aquí: se rellenan a mano en el panel
+# de Render, para que ninguna credencial acabe en el repositorio.
+#
+# Después de desplegar hay que hacer dos cosas:
+#   1. Poner la URL pública que dé Render en `datfut/src/app/environments/environment.prod.ts`.
+#   2. Poner esa misma URL del frontend (la de Vercel) en CORS_ORIGINS, aquí abajo.
+
+services:
+  - type: web
+    name: futanalytica-api
+    runtime: python
+    plan: free
+    region: oregon
+
+    buildCommand: pip install -r requirements.txt
+    # Render inyecta $PORT; escuchar en 0.0.0.0 es obligatorio.
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+    healthCheckPath: /health
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+
+      # ── Obligatorias: se rellenan en el panel de Render ──────────────────
+      - key: FOOTBALL_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+
+      # ── CORS: SPEC §6 exige restringirlo al dominio del frontend ─────────
+      # Sustituir por la URL real de Vercel antes de dar el servicio por bueno.
+      - key: CORS_ORIGINS
+        value: https://futanalytica.vercel.app
+
+      # ── Agente (opcional) ────────────────────────────────────────────────
+      # Sin estas, /agent/chat sigue respondiendo en modo degradado.
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        value: us-east-1
+      - key: BEDROCK_CLIENT
+        value: invoke
+      - key: BEDROCK_MODEL_ID
+        value: us.anthropic.claude-opus-5

@@ -1,0 +1,48 @@
+name: CI
+
+# SPEC §3, Módulo 4: las pruebas corren en cada push a `main` y en cada PR.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    name: pytest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar pruebas
+        # `tests/conftest.py` fija credenciales falsas antes de que `config.py`
+        # las lea, y los tests sustituyen el cliente HTTP y la persistencia:
+        # la suite no sale a la red ni toca PostgreSQL, así que no necesita
+        # secretos. Si algún día los necesita, es señal de que una prueba se
+        # volvió de integración y hay que aislarla.
+        run: python -m pytest -q
+
+      - name: Verificar que la app arranca
+        # Atrapa errores de import, rutas mal declaradas y configuración rota,
+        # que pytest no siempre destapa.
+        env:
+          FOOTBALL_API_KEY: clave-de-ci
+          DATABASE_URL: postgresql://ci:ci@localhost/ci
+        run: |
+          python -c "
+          import main
+          rutas = sorted(main.app.openapi()['paths'])
+          print(f'{len(rutas)} rutas registradas')
+          assert '/agent/chat' in rutas, 'falta el endpoint del agente'
+          assert '/health' in rutas, 'falta /health'
+          "
