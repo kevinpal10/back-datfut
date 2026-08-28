@@ -1,7 +1,7 @@
 # Backend — FutAnalytica AI
 
 BFF en FastAPI sobre `api-football` v3, con caché de 24 h, catálogo de países en
-PostgreSQL (Neon) y el agente "Entrenador Táctico" sobre AWS Bedrock.
+PostgreSQL (Neon) y el agente "Profe KevBot" sobre AWS Bedrock.
 
 La especificación del producto está en [`../SPEC.md`](../SPEC.md); el estado real
 y la deuda pendiente, en [`../ESTADO.md`](../ESTADO.md).

@@ -5,7 +5,7 @@ import pandas as pd
 from clients.errors import DatabaseError
 from clients.football_api_client import ApiResult
 from clients.football_api_client import football_client as client
-from database.connection import engine
+from database.connection import engine, run_with_retry
 
 
 def _jsonable(value):
@@ -38,7 +38,13 @@ class CountriesService:
     def get_countries() -> list[dict]:
         """Catálogo de países desde PostgreSQL (Neon), no desde api-football."""
         try:
-            df = pd.read_sql("SELECT * FROM db_countries", engine)
+            # Con reintento: en el plan gratuito Neon suspende la base y la
+            # primera conexion tras un rato de inactividad falla mientras
+            # despierta. Sin esto, la primera visita devolvia 503 y la pantalla
+            # de paises salia vacia.
+            df = run_with_retry(
+                lambda: pd.read_sql("SELECT * FROM db_countries", engine)
+            )
         except Exception as exc:
             # Antes devolvía `0`, y el frontend hacía `.filter()` sobre un número.
             # Fallar con un error tipado deja que `main.py` responda un 503 limpio.

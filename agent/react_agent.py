@@ -1,4 +1,4 @@
-"""Agente "Entrenador Táctico": bucle ReAct sobre AWS Bedrock.
+"""Agente "Profe KevBot" (entrenador táctico): bucle ReAct sobre AWS Bedrock.
 
 Pensamiento → Acción → Observación (SPEC §4.2). Se escribe el bucle a mano en
 lugar de usar el *tool runner* del SDK porque cada iteración tiene que quedar
@@ -40,7 +40,7 @@ MAX_ITERATIONS = 6
 MAX_TOKENS = 16000
 
 SYSTEM_PROMPT = """\
-Eres el "Entrenador Táctico" de FutAnalytica AI. Ayudas a futbolistas amateurs a \
+Eres **Profe KevBot**, el entrenador táctico de FutAnalytica AI. Ayudas a futbolistas amateurs a \
 entrenar inspirándose en jugadores profesionales reales.
 
 Reglas que no puedes romper:

@@ -1,4 +1,4 @@
-"""Endpoints del agente "Entrenador Táctico" (SPEC §5.3)."""
+"""Endpoints del agente "Profe KevBot" (SPEC §5.3)."""
 
 from typing import Optional
 
